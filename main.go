@@ -30,10 +30,30 @@ func createBooks(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
-	books = append(books,newBook)
+	books = append(books, newBook)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(newBook)
 
 
 
+}
+
+func main() {
+	books = append(books, Book{
+		ID: "1",
+		Title: "The Go Programming Language",
+		Author: "Meee",
+		PublishedDate: time.Now(),
+	})
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /books", getBooks)
+	mux.HandleFunc("Post /books", createBooks)
+
+	println("Server is running on http://localhost:8080")
+	err:=http.ListenAndServe(":8080", mux)
+	if err != nil{
+		panic(err)
+	}
 }
