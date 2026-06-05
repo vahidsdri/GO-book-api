@@ -1,0 +1,18 @@
+# Go build outputs and directories
+*.exe
+*.out
+/bin/
+
+# Dependencies and modules
+vendor/
+.idea/ # For JetBrains IDEs (like GoLand)
+*.iml
+
+# Build artifacts and caches
+/pkg/
+/build/
+/tmp/
+
+# Editor/Tool specific files
+.vscode/ # VS Code settings
+.DS_Store  # macOS metadata
