@@ -1,4 +1,4 @@
-package books
+package handlers
 
 import (
 	"encoding/json"
@@ -6,20 +6,19 @@ import (
 	"slices"
 	"sync"
 	"time"
+	"database/sql"
+	"log"
+	_ "modernc.org/sqlite"
+	"go-book-api/models"
+
 )
 
-type Book struct {
-	ID            string    `json:"id"`
-	Title         string    `json:"title"`
-	Author        string    `json:"author"`
-	PublishedDate time.Time `json:"published_date"`
-}
 
-var books []Book
+
 var mu sync.Mutex
 
 func InitData() {
-	books = append(books, Book{
+	models.Books = append(models.Books, models.Book{
 		ID:            "1",
 		Title:         "The Go Programming Language",
 		Author:        "Meee",
@@ -32,19 +31,19 @@ func GetBooks(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	json.NewEncoder(w).Encode(books)
+	json.NewEncoder(w).Encode(models.Books)
 }
 
 func CreateBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var newBook Book
+	var newBook models.Book
 	err := json.NewDecoder(r.Body).Decode(&newBook)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	mu.Lock()
-	books = append(books, newBook)
+	models.Books = append(models.Books, newBook)
 	mu.Unlock()
 	w.WriteHeader(http.StatusCreated)
 
@@ -58,7 +57,7 @@ func GetBookById(w http.ResponseWriter, r *http.Request) {
 	//Looping through slices of books
 	mu.Lock()
 	defer mu.Unlock()
-	for _, book := range books {
+	for _, book := range models.Books {
 		if book.ID == id {
 			json.NewEncoder(w).Encode(book)
 			return
@@ -80,7 +79,7 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	index := -1
 	mu.Lock()
 	defer mu.Unlock()
-	for i, book := range books {
+	for i, book := range models.Books {
 		if book.ID == id {
 			index = i
 			break
@@ -91,6 +90,6 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Book not found", http.StatusNotFound)
 		return
 	}
-	books = slices.Delete(books, index, index+1)
+	models.Books = slices.Delete(models.Books, index, index+1)
 	w.WriteHeader(http.StatusNoContent)
 }

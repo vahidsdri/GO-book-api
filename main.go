@@ -2,19 +2,19 @@ package main
 
 import (
 	"net/http"
-	"go-book-api/books"
+	"go-book-api/handlers"
 )
 
 
 func main() {
-	books.InitData()
+	handlers.InitData()
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /books", books.GetBooks)
-	mux.HandleFunc("POST /books", books.CreateBooks)
-	mux.HandleFunc("GET /books/{id}", books.GetBookById)
-	mux.HandleFunc("DELETE /books/{id}", books.DeleteBook)
+	mux.HandleFunc("GET /books", handlers.GetBooks)
+	mux.HandleFunc("POST /books", handlers.CreateBooks)
+	mux.HandleFunc("GET /books/{id}", handlers.GetBookById)
+	mux.HandleFunc("DELETE /books/{id}", handlers.DeleteBook)
 
 	println("Server is running on http://localhost:8080")
 	err := http.ListenAndServe(":8080", mux)
